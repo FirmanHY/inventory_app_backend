@@ -10,13 +10,15 @@ import (
 	"os"
 	"path/filepath"
 
+	gcsStorage "cloud.google.com/go/storage"
 	firebase "firebase.google.com/go/v4"
-	"firebase.google.com/go/v4/storage"
+	firebaseStorage "firebase.google.com/go/v4/storage"
+
 	"github.com/google/uuid"
 	"google.golang.org/api/option"
 )
 
-var StorageClient *storage.Client
+var StorageClient *firebaseStorage.Client
 
 func InitializeStorage() error {
 	credPath := config.Get("FIREBASE_CREDENTIALS_FILES")
@@ -70,10 +72,11 @@ func UploadFile(fileHeader *multipart.FileHeader, folder string) (string, error)
 		return "", err
 	}
 
-	attrs, err := obj.Attrs(ctx)
-	if err != nil {
+	// Buat objek bisa diakses publik
+	if err := obj.ACL().Set(ctx, gcsStorage.AllUsers, gcsStorage.RoleReader); err != nil {
 		return "", err
 	}
 
-	return attrs.MediaLink, nil
+	publicURL := fmt.Sprintf("https://storage.googleapis.com/%s/%s/%s", bucketName, folder, fileName)
+	return publicURL, nil
 }
