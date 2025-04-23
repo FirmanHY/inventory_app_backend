@@ -1,7 +1,7 @@
 package dto
 
 type SummaryResponse struct {
-	TotalBarang  int64 `json:"total_barang,omitempty"`
-	BarangMasuk  int64 `json:"barang_masuk,omitempty"`
-	BarangKeluar int64 `json:"barang_keluar,omitempty"`
+	TotalItems int64 `json:"total_items,omitempty"`
+	ItemsIn    int64 `json:"items_in,omitempty"`
+	ItemsOut   int64 `json:"items_out,omitempty"`
 }

@@ -27,14 +27,16 @@ func (h *SummaryHandler) GetInventorySummary(c *gin.Context) {
 	}
 
 	// Hitung total barang masuk
-	if err := h.DB.Model(&models.Transaction{}).Where("transaction_type = ?", "in").
+	if err := h.DB.Model(&models.Transaction{}).
+		Where("transaction_type = ?", constants.TransactionTypeIn).
 		Select("SUM(quantity)").Scan(&totalIn).Error; err != nil {
 		utils.ServerError(c, constants.MsgSummaryInFailed, err)
 		return
 	}
 
 	// Hitung total barang keluar
-	if err := h.DB.Model(&models.Transaction{}).Where("transaction_type = ?", "out").
+	if err := h.DB.Model(&models.Transaction{}).
+		Where("transaction_type = ?", constants.TransactionTypeOut).
 		Select("SUM(quantity)").Scan(&totalOut).Error; err != nil {
 		utils.ServerError(c, constants.MsgSummaryOutFailed, err)
 		return
@@ -43,15 +45,15 @@ func (h *SummaryHandler) GetInventorySummary(c *gin.Context) {
 	resp := dto.SummaryResponse{}
 
 	switch summaryType {
-	case "in":
-		resp = dto.SummaryResponse{BarangMasuk: totalIn}
-	case "out":
-		resp = dto.SummaryResponse{BarangKeluar: totalOut}
+	case constants.TransactionTypeIn:
+		resp = dto.SummaryResponse{ItemsIn: totalIn}
+	case constants.TransactionTypeOut:
+		resp = dto.SummaryResponse{ItemsOut: totalOut}
 	default:
 		resp = dto.SummaryResponse{
-			TotalBarang:  totalStock,
-			BarangMasuk:  totalIn,
-			BarangKeluar: totalOut,
+			TotalItems: totalStock,
+			ItemsIn:    totalIn,
+			ItemsOut:   totalOut,
 		}
 	}
 
