@@ -20,8 +20,8 @@ func (h *SummaryHandler) GetInventorySummary(c *gin.Context) {
 
 	var totalStock, totalIn, totalOut int64
 
-	// Hitung total stock dari semua item
-	if err := h.DB.Model(&models.Item{}).Select("SUM(stock)").Scan(&totalStock).Error; err != nil {
+	// Hitung total data barang dari semua item
+	if err := h.DB.Model(&models.Item{}).Select("COUNT(*)").Scan(&totalStock).Error; err != nil {
 		utils.ServerError(c, constants.MsgSummaryTotalFailed, err)
 		return
 	}
