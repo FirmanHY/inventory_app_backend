@@ -6,7 +6,6 @@ import (
 	"inventory_app_backend/internal/models"
 	"inventory_app_backend/internal/utils"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -258,81 +257,4 @@ func (h *AuthHandler) GetUserByID(c *gin.Context) {
 	}
 
 	utils.Success(c, http.StatusOK, constants.MsgUserFetchSuccess, resp)
-}
-
-func (h *ItemHandler) GetAllItems(c *gin.Context) {
-	var req dto.ItemListRequest
-	if err := c.ShouldBindQuery(&req); err != nil {
-		utils.BadRequest(c, constants.MsgValidationFailed, err)
-		return
-	}
-
-	// Set default values
-	if req.Page == 0 {
-		req.Page = 1
-	}
-	if req.Limit == 0 {
-		req.Limit = 10
-	}
-
-	offset := (req.Page - 1) * req.Limit
-
-	query := h.DB.Model(&models.Item{}).
-		Preload("Type").
-		Preload("Unit").
-		Order("created_at DESC")
-
-	if req.Search != "" {
-		query = query.Where("item_name LIKE ?", "%"+req.Search+"%")
-	}
-
-	if req.LowStockOnly {
-		query = query.Where("stock < minimum_stock")
-	}
-
-	var total int64
-	if err := query.Count(&total).Error; err != nil {
-		utils.ServerError(c, constants.MsgInternalServerError, err)
-		return
-	}
-
-	var items []models.Item
-	if err := query.Offset(offset).Limit(req.Limit).Find(&items).Error; err != nil {
-		utils.ServerError(c, constants.MsgInternalServerError, err)
-		return
-	}
-
-	var itemResponses []dto.ItemResponse
-	for _, item := range items {
-		itemResponses = append(itemResponses, dto.ItemResponse{
-			ItemID:       item.ItemID,
-			ItemName:     item.ItemName,
-			TypeID:       item.TypeID,
-			TypeName:     item.Type.TypeName,
-			UnitID:       item.UnitID,
-			UnitName:     item.Unit.UnitName,
-			Stock:        item.Stock,
-			MinimumStock: item.MinimumStock,
-			Image:        item.Image,
-			CreatedAt:    item.CreatedAt.Format(time.RFC3339),
-			UpdatedAt:    item.UpdatedAt.Format(time.RFC3339),
-		})
-	}
-
-	totalPages := total / int64(req.Limit)
-	if total%int64(req.Limit) > 0 {
-		totalPages++
-	}
-
-	resp := dto.ItemListResponse{
-		Data: itemResponses,
-		Pagination: dto.Pagination{
-			Page:       req.Page,
-			Limit:      req.Limit,
-			TotalData:  int(total),
-			TotalPages: int(totalPages),
-		},
-	}
-
-	utils.Success(c, http.StatusOK, constants.MsgItemsFetchSuccess, resp)
 }
