@@ -23,6 +23,7 @@ type TransactionResponse struct {
 	TransactionID   string    `json:"transaction_id"`
 	ItemID          string    `json:"item_id"`
 	ItemName        string    `json:"item_name"`
+	Image           string    `json:"image"`
 	Date            time.Time `json:"date"`
 	Quantity        int       `json:"quantity"`
 	TransactionType string    `json:"transaction_type"`

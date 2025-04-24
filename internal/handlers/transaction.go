@@ -155,6 +155,7 @@ func (h *TransactionHandler) GetAllTransactions(c *gin.Context) {
 			TransactionID:   t.TransactionID,
 			ItemID:          t.ItemID,
 			ItemName:        t.Item.ItemName,
+			Image:           t.Item.Image,
 			Date:            t.Date,
 			Quantity:        t.Quantity,
 			TransactionType: t.TransactionType,
