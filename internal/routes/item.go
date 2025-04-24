@@ -18,5 +18,6 @@ func setupItemRoutes(router *gin.Engine, h *handlers.ItemHandler) {
 		itemRoutes.POST("", h.CreateItem)
 		itemRoutes.PUT("/:id", h.UpdateItem)
 		itemRoutes.DELETE("/:id", h.DeleteItem)
+		itemRoutes.GET("/low-stock", h.GetLowStockItems)
 	}
 }

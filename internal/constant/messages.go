@@ -162,6 +162,16 @@ const (
 	MsgInvalidTransactionType   = "Tipe transaksi tidak valid"
 )
 
+// ========================
+// SUMMARY
+// ========================
+const (
+	MsgSummaryFetchedSuccess = "Jumlah inventaris berhasil didapatkan"
+	MsgSummaryTotalFailed    = "Gagal mengambil jumlah total barang"
+	MsgSummaryInFailed       = "Gagal mengambil jumlah barang masuk"
+	MsgSummaryOutFailed      = "Gagal mengambil jumlah barang keluar"
+)
+
 func GetReportTitleByType(txType string) string {
 	switch txType {
 	case TransactionTypeIn:

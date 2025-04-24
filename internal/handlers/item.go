@@ -286,3 +286,26 @@ func (h *ItemHandler) DeleteItem(c *gin.Context) {
 
 	utils.Success(c, http.StatusOK, constants.MsgItemDeletedSuccess, nil)
 }
+
+func (h *ItemHandler) GetLowStockItems(c *gin.Context) {
+	var items []models.Item
+	if err := h.DB.Preload("Type").
+		Where("stock < minimum_stock").
+		Find(&items).Error; err != nil {
+		utils.ServerError(c, constants.MsgFailedFetchItems, err)
+		return
+	}
+
+	var result []dto.ItemResponse
+	for _, item := range items {
+		result = append(result, dto.ItemResponse{
+			ItemID:   item.ItemID,
+			ItemName: item.ItemName,
+			TypeID:   item.TypeID,
+			TypeName: item.Type.TypeName,
+			Stock:    item.Stock,
+		})
+	}
+
+	utils.Success(c, http.StatusOK, constants.MsgItemsFetchSuccess, result)
+}

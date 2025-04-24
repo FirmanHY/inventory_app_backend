@@ -14,6 +14,8 @@ func SetupRouter(
 	unitHandler *handlers.UnitHandler,
 	transactionHandler *handlers.TransactionHandler,
 	reportHandler *handlers.ReportHandler,
+	summaryHandler *handlers.SummaryHandler,
+
 ) *gin.Engine {
 	router := gin.New()
 
@@ -36,6 +38,6 @@ func SetupRouter(
 	setupMasterDataRoutes(router, itemTypeHandler, unitHandler)
 	setupTransactionRoutes(router, transactionHandler)
 	setupReportRoutes(router, reportHandler)
-
+	setupSummaryRoutes(router, summaryHandler)
 	return router
 }

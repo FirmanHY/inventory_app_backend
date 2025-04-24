@@ -40,6 +40,7 @@ func main() {
 	unitHandler := &handlers.UnitHandler{DB: db}
 	transactionHandler := &handlers.TransactionHandler{DB: db}
 	reportHandler := &handlers.ReportHandler{DB: db}
+	summaryHandler := &handlers.SummaryHandler{DB: db}
 
 	// Setup router
 	router := routes.SetupRouter(
@@ -49,6 +50,7 @@ func main() {
 		unitHandler,
 		transactionHandler,
 		reportHandler,
+		summaryHandler,
 	)
 	// Setup server
 	port := config.Get("APP_PORT")

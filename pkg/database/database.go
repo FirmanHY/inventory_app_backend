@@ -22,8 +22,9 @@ func NewMySQLDB() (*gorm.DB, error) {
 
 	// Format DSN
 	dsn := fmt.Sprintf(
-		"%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+		"%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		config.Get("DB_USER"),
+		config.Get("DB_PASSWORD"), // <- ini yang kurang tadi
 		config.Get("DB_HOST"),
 		config.Get("DB_PORT"),
 		config.Get("DB_NAME"),
