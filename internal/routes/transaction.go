@@ -9,12 +9,19 @@ import (
 )
 
 func setupTransactionRoutes(router *gin.Engine, h *handlers.TransactionHandler) {
-
 	transactionRoutes := router.Group("/transactions")
-	transactionRoutes.Use(middleware.Auth(), middleware.RoleAllowed(constants.RoleAdmin, constants.RoleWarehouseAdmin))
+	transactionRoutes.Use(middleware.Auth())
+
+	readRoutes := transactionRoutes.Group("")
+	readRoutes.Use(middleware.RoleAllowed(constants.RoleAdmin, constants.RoleWarehouseAdmin, constants.RoleWarehouseManager))
 	{
-		transactionRoutes.GET("", h.GetAllTransactions)
-		transactionRoutes.POST("", h.CreateTransaction)
-		transactionRoutes.DELETE("/:id", h.DeleteTransaction)
+		readRoutes.GET("", h.GetAllTransactions)
+	}
+
+	writeRoutes := transactionRoutes.Group("")
+	writeRoutes.Use(middleware.RoleAllowed(constants.RoleAdmin, constants.RoleWarehouseAdmin))
+	{
+		writeRoutes.POST("", h.CreateTransaction)
+		writeRoutes.DELETE("/:id", h.DeleteTransaction)
 	}
 }

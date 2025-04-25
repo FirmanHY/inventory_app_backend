@@ -9,18 +9,26 @@ import (
 )
 
 func setupMasterDataRoutes(router *gin.Engine, h *handlers.ItemTypeHandler, u *handlers.UnitHandler) {
-
 	masterDataRoutes := router.Group("/master-data")
-	masterDataRoutes.Use(middleware.Auth(), middleware.RoleAllowed(constants.RoleAdmin, constants.RoleWarehouseAdmin))
+	masterDataRoutes.Use(middleware.Auth())
+
+	// Read-only routes accessible to admin, warehouse_admin, and warehouse_manager
+	readRoutes := masterDataRoutes.Group("")
+	readRoutes.Use(middleware.RoleAllowed(constants.RoleAdmin, constants.RoleWarehouseAdmin, constants.RoleWarehouseManager))
 	{
-		masterDataRoutes.POST("/item-types", h.CreateItemType)
-		masterDataRoutes.PUT("/item-types/:id", h.UpdateItemType)
-		masterDataRoutes.GET("/item-types", h.GetAllItemTypes)
-		masterDataRoutes.DELETE("/item-types/:id", h.DeleteItemType)
-		// Unit routes
-		masterDataRoutes.GET("/units", u.GetAllUnits)
-		masterDataRoutes.POST("/units", u.CreateUnit)
-		masterDataRoutes.PUT("/units/:id", u.UpdateUnit)
-		masterDataRoutes.DELETE("/units/:id", u.DeleteUnit)
+		readRoutes.GET("/item-types", h.GetAllItemTypes)
+		readRoutes.GET("/units", u.GetAllUnits)
+	}
+
+	// Write routes accessible only to admin and warehouse_admin
+	writeRoutes := masterDataRoutes.Group("")
+	writeRoutes.Use(middleware.RoleAllowed(constants.RoleAdmin, constants.RoleWarehouseAdmin))
+	{
+		writeRoutes.POST("/item-types", h.CreateItemType)
+		writeRoutes.PUT("/item-types/:id", h.UpdateItemType)
+		writeRoutes.DELETE("/item-types/:id", h.DeleteItemType)
+		writeRoutes.POST("/units", u.CreateUnit)
+		writeRoutes.PUT("/units/:id", u.UpdateUnit)
+		writeRoutes.DELETE("/units/:id", u.DeleteUnit)
 	}
 }

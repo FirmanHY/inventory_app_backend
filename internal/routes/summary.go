@@ -10,7 +10,7 @@ import (
 
 func setupSummaryRoutes(router *gin.Engine, h *handlers.SummaryHandler) {
 	summary := router.Group("/summary")
-	summary.Use(middleware.Auth(), middleware.RoleAllowed(constants.RoleAdmin, constants.RoleWarehouseAdmin))
+	summary.Use(middleware.Auth(), middleware.RoleAllowed(constants.RoleAdmin, constants.RoleWarehouseAdmin, constants.RoleWarehouseManager))
 	{
 		summary.GET("/inventory", h.GetInventorySummary)
 	}
