@@ -19,7 +19,10 @@ type TransactionHandler struct {
 
 func (h *TransactionHandler) CreateTransaction(c *gin.Context) {
 	var req dto.CreateTransactionRequest
+	fmt.Printf("%+v\n", req)
+
 	if err := c.ShouldBindJSON(&req); err != nil {
+
 		utils.BadRequest(c, constant.MsgValidationFailed, err)
 		return
 	}

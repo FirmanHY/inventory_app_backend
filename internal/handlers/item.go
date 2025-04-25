@@ -134,7 +134,7 @@ func (h *ItemHandler) GetAllItems(c *gin.Context) {
 	}
 
 	if req.LowStockOnly {
-		query = query.Where("stock < minimum_stock")
+		query = query.Where("stock <= minimum_stock")
 	}
 
 	var total int64
@@ -367,7 +367,7 @@ func (h *ItemHandler) DeleteItem(c *gin.Context) {
 func (h *ItemHandler) GetLowStockItems(c *gin.Context) {
 	var items []models.Item
 	if err := h.DB.Preload("Type").
-		Where("stock < minimum_stock").
+		Where("stock <= minimum_stock").
 		Find(&items).Error; err != nil {
 		utils.ServerError(c, constants.MsgFailedFetchItems, err)
 		return

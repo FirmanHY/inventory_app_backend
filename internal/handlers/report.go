@@ -23,7 +23,7 @@ func (h *ReportHandler) GenerateItemReport(c *gin.Context) {
 
 	query := h.DB.Preload("Type").Preload("Unit")
 	if lowStockOnly {
-		query = query.Where("stock < minimum_stock")
+		query = query.Where("stock <= minimum_stock")
 	}
 
 	var items []models.Item
