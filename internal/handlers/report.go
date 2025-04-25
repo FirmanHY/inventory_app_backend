@@ -2,6 +2,7 @@
 package handlers
 
 import (
+	"fmt"
 	constants "inventory_app_backend/internal/constant"
 	"inventory_app_backend/internal/dto"
 	"inventory_app_backend/internal/models"
@@ -23,14 +24,17 @@ func (h *ReportHandler) GenerateItemReport(c *gin.Context) {
 
 	query := h.DB.Preload("Type").Preload("Unit")
 	if lowStockOnly {
-		query = query.Where("stock <= minimum_stock")
+		query = query.Where("stock < minimum_stock")
 	}
 
+	query = query.Debug()
 	var items []models.Item
 	if err := query.Find(&items).Error; err != nil {
 		utils.ServerError(c, constants.MsgFailedFetchItems, err)
 		return
 	}
+
+	fmt.Println("Items found:", len(items))
 
 	var reportData []dto.ItemReportDTO
 	for _, item := range items {
